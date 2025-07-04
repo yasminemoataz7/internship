@@ -18,62 +18,87 @@ abstract class Product {
     }
 }
 
-interface Shippable {
+interface shippable {
     String getName();
     double getWeight();
 }
 
-interface Expirable {
+interface expirable {
     boolean isExpired();
 }
 
-class Cheese extends Product implements Shippable, Expirable {
+class Cheese extends Product implements shippable, expirable {
     double weight;
-    Date expiryDate;
+    Date expirydate;
 
-    Cheese(String name, double price, int quantity, double weight, Date expiryDate) {
+    Cheese(String name, double price, int quantity, double weight, Date expirydate) {
         super(name, price, quantity);
         this.weight = weight;
-        this.expiryDate = expiryDate;
+        this.expirydate = expirydate;
     }
 
-    public double getWeight() {
+    public double getweight() {
         return weight;
     }
 
-    public boolean isExpired() {
-        return new Date().after(expiryDate);
+    public boolean isexpired() {
+        return new Date().after(expirydate);
     }
 
     public String getName() {
         return name;
     }
-}
 
-class Biscuit extends Product implements Shippable, Expirable {
-    double weight;
-    Date expiryDate;
-
-    Biscuit(String name, double price, int quantity, double weight, Date expiryDate) {
-        super(name, price, quantity);
-        this.weight = weight;
-        this.expiryDate = expiryDate;
+    @Override
+    public double getWeight() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public double getWeight() {
+    @Override
+    public boolean isExpired() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+}
+
+class Biscuit extends Product implements shippable, expirable {
+    double weight;
+    Date expirydate;
+
+    Biscuit(String name, double price, int quantity, double weight, Date expirydate) {
+        super(name, price, quantity);
+        this.weight = weight;
+        this.expirydate = expirydate;
+    }
+
+    public double getweight() {
         return weight;
     }
 
-    public boolean isExpired() {
-        return new Date().after(expiryDate);
+    public boolean isexpired() {
+        return new Date().after(expirydate);
     }
 
-    public String getName() {
+    public String getname() {
         return name;
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public double getWeight() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean isExpired() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
 
-class TV extends Product implements Shippable {
+class TV extends Product implements shippable {
     double weight;
 
     TV(String name, double price, int quantity, double weight) {
@@ -81,12 +106,22 @@ class TV extends Product implements Shippable {
         this.weight = weight;
     }
 
-    public double getWeight() {
+    public double getweight() {
         return weight;
     }
 
-    public String getName() {
+    public String getname() {
         return name;
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public double getWeight() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
 
@@ -96,11 +131,11 @@ class Card extends Product {
     }
 }
 
-class ItemsInCart {
+class Itemsincart {
     Product product;
     int quantity;
 
-    ItemsInCart(Product product, int quantity) {
+    Itemsincart(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
@@ -117,11 +152,11 @@ class Customer {
 }
 
 class Cart {
-    ArrayList<ItemsInCart> items = new ArrayList<>();
+    ArrayList<Itemsincart> items = new ArrayList<>();
 
     void add(Product product, int quantity) {
         if (quantity <= product.quantity) {
-            items.add(new ItemsInCart(product, quantity));
+            items.add(new Itemsincart(product, quantity));
             product.quantity -= quantity;
             System.out.println("added into cart successfully");
         } else {
@@ -135,14 +170,14 @@ class Cart {
             return;
         }
 
-        double orderSubtotal = 0;
-        double shippingFee = 0;
-        List<Shippable> itemsToShip = new ArrayList<>();
+        double ordersubtotal = 0;
+        double shippingfee = 0;
+        List<Shippable> itemstoship = new ArrayList<>();
 
-        for (ItemsInCart item : items) {
+        for (Itemsincart item : items) {
             Product product = item.product;
 
-            if (product instanceof Expirable && ((Expirable) product).isExpired()) {
+            if (product instanceof Expirable && ((Expirable) product).isexpired()) {
                 System.out.println("Error: " + product.name + " is expired.");
                 return;
             }
@@ -152,33 +187,33 @@ class Cart {
                 return;
             }
 
-            orderSubtotal += product.price * item.quantity;
+            ordersubtotal += product.price * item.quantity;
 
             if (product instanceof Shippable) {
-                shippingFee += 60 * item.quantity;
+                shippingfee += 60 * item.quantity;
                 for (int i = 0; i < item.quantity; i++) {
-                    itemsToShip.add((Shippable) product);
+                    itemstoship.add((Shippable) product);
                 }
             }
         }
 
-        double paidAmount = orderSubtotal + shippingFee;
+        double paidamount = ordersubtotal + shippingfee;
 
-        if (customer.balance < paidAmount) {
+        if (customer.balance < paidamount) {
             System.out.println("customer's balance insufficient");
             return;
         } else {
-            customer.balance -= paidAmount;
+            customer.balance -= paidamount;
         }
 
         System.out.println("**checkout receipt**");
-        for (ItemsInCart item : items) {
+        for (Itemsincart item : items) {
             System.out.println(item.quantity + " of " + item.product.name);
         }
         System.out.println("-------------------------------------");
-        System.out.println("subtotal:   " + orderSubtotal);
-        System.out.println("shipping:   " + shippingFee);
-        System.out.println("amount:    " + paidAmount);
+        System.out.println("subtotal:   " + ordersubtotal);
+        System.out.println("shipping:   " + shippingfee);
+        System.out.println("amount:    " + paidamount);
         System.out.println("balance remaining: " + customer.balance);
     }
 }
