@@ -1,0 +1,201 @@
+import java.util.*;
+
+abstract class Product {
+    String name;
+    double price;
+    int quantity;
+
+    Product() {
+        this.name = null;
+        this.price = 0;
+        this.quantity = 0;
+    }
+
+    Product(String name, double price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+}
+
+interface Shippable {
+    String getName();
+    double getWeight();
+}
+
+interface Expirable {
+    boolean isExpired();
+}
+
+class Cheese extends Product implements Shippable, Expirable {
+    double weight;
+    Date expiryDate;
+
+    Cheese(String name, double price, int quantity, double weight, Date expiryDate) {
+        super(name, price, quantity);
+        this.weight = weight;
+        this.expiryDate = expiryDate;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public boolean isExpired() {
+        return new Date().after(expiryDate);
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+class Biscuit extends Product implements Shippable, Expirable {
+    double weight;
+    Date expiryDate;
+
+    Biscuit(String name, double price, int quantity, double weight, Date expiryDate) {
+        super(name, price, quantity);
+        this.weight = weight;
+        this.expiryDate = expiryDate;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public boolean isExpired() {
+        return new Date().after(expiryDate);
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+class TV extends Product implements Shippable {
+    double weight;
+
+    TV(String name, double price, int quantity, double weight) {
+        super(name, price, quantity);
+        this.weight = weight;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+class Card extends Product {
+    Card(String name, double price, int quantity) {
+        super(name, price, quantity);
+    }
+}
+
+class ItemsInCart {
+    Product product;
+    int quantity;
+
+    ItemsInCart(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
+}
+
+class Customer {
+    String name;
+    double balance;
+
+    Customer(String name, double balance) {
+        this.name = name;
+        this.balance = balance;
+    }
+}
+
+class Cart {
+    ArrayList<ItemsInCart> items = new ArrayList<>();
+
+    void add(Product product, int quantity) {
+        if (quantity <= product.quantity) {
+            items.add(new ItemsInCart(product, quantity));
+            product.quantity -= quantity;
+            System.out.println("added into cart successfully");
+        } else {
+            System.out.println("not available in stock");
+        }
+    }
+
+    void checkout(Customer customer) {
+        if (items.isEmpty()) {
+            System.out.println("no items in the cart the cart is empty");
+            return;
+        }
+
+        double orderSubtotal = 0;
+        double shippingFee = 0;
+        List<Shippable> itemsToShip = new ArrayList<>();
+
+        for (ItemsInCart item : items) {
+            Product product = item.product;
+
+            if (product instanceof Expirable && ((Expirable) product).isExpired()) {
+                System.out.println("Error: " + product.name + " is expired.");
+                return;
+            }
+
+            if (item.quantity > product.quantity) {
+                System.out.println(product.name + " is out of stock");
+                return;
+            }
+
+            orderSubtotal += product.price * item.quantity;
+
+            if (product instanceof Shippable) {
+                shippingFee += 60 * item.quantity;
+                for (int i = 0; i < item.quantity; i++) {
+                    itemsToShip.add((Shippable) product);
+                }
+            }
+        }
+
+        double paidAmount = orderSubtotal + shippingFee;
+
+        if (customer.balance < paidAmount) {
+            System.out.println("customer's balance insufficient");
+            return;
+        } else {
+            customer.balance -= paidAmount;
+        }
+
+        System.out.println("**checkout receipt**");
+        for (ItemsInCart item : items) {
+            System.out.println(item.quantity + " of " + item.product.name);
+        }
+        System.out.println("-------------------------------------");
+        System.out.println("subtotal:   " + orderSubtotal);
+        System.out.println("shipping:   " + shippingFee);
+        System.out.println("amount:    " + paidAmount);
+        System.out.println("balance remaining: " + customer.balance);
+    }
+}
+
+public class JavaApplication26 {
+    public static void main(String[] args) {
+        Product cheese = new Cheese("Cheese", 100, 5, 0.2, new Date(2025 - 1900, 7, 20));
+        Product biscuit = new Biscuit("Biscuit", 150, 3, 0.35, new Date(2025 - 1900, 7, 15));
+        Product card = new Card("ScratchCard", 50, 10);
+
+        Customer customer = new Customer("Yasmine", 500.0);
+        Cart cart = new Cart();
+
+        cart.add(cheese, 2);
+        cart.add(biscuit, 1);
+        cart.add(card, 1);
+
+        cart.checkout(customer);
+    }
+}
